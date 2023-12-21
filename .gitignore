@@ -1,0 +1,4 @@
+PDFs/
+__pycache__/*
+chroma_store/
+mf_clicksence_chat_secrets/

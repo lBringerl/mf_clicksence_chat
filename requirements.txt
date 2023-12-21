@@ -1,0 +1,16 @@
+codeinterpreterapi[all]
+jupyter-kernel-gateway
+typing_extensions
+typing-extensions
+google_colab_shell
+openai==0.28
+chromadb
+PyPDF2
+notebook
+ipywidgets
+tqdm
+python-dotenv
+aiogram==2.23.1
+pypdf
+langchain
+tiktoken
