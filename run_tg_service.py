@@ -1,17 +1,19 @@
 import os
-from pathlib import Path
 
-from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
 import openai
 import chromadb
 from chromadb.utils import embedding_functions
 
+from paths import CHROMA_STORE_PATH, OPENAI_TOKEN_PATH, TG_TOKEN_PATH
 
-PROJECT_HOME = Path(__file__).parent
-SECRETS_HOME = PROJECT_HOME.join('mf_clicksence_chat_secrets')
-TG_TOKEN_PATH = PROJECT_HOME.join('tg_key.key')
-OPENAI_TOKEN_PATH = PROJECT_HOME.join('openai_key.key')
+
+OPENAI_TOKEN = OPENAI_TOKEN_PATH.read_text()
+TG_TOKEN = TG_TOKEN_PATH.read_text()
+
+openai.api_key = OPENAI_TOKEN
+os.environ['OPENAI_API_KEY'] = OPENAI_TOKEN
+os.environ['VERBOSE'] = 'True'
 
 
 class Reference:
@@ -21,8 +23,7 @@ class Reference:
     def __init__(self) -> None:
         self.response = ''
 
-# Load environment variables
-load_dotenv()
+
 reference = Reference()
 
 repo = '/content/drive/MyDrive/nlp_qliksence'
@@ -30,8 +31,9 @@ MODEL_NAME = 'gpt-3.5-turbo'
 MODEL_EMBEDDING = 'text-embedding-ada-002'
 
 # Initialize bot and dispatcher
-bot = Bot(token=TOKEN)
+bot = Bot(token=TG_TOKEN)
 dispatcher = Dispatcher(bot)
+
 
 # ----------------MY CODE STARTS HERE----------------
 def query_embedding(text) -> None:
@@ -43,11 +45,13 @@ def query_embedding(text) -> None:
     return response['data'][0]['embedding']
 # ----------------MY CODE ENDS HERE----------------
 
+
 def clear_past():
     """
     A function to clear the previous conversation and context.
     """
     reference.response = ''
+
 
 @dispatcher.message_handler(commands=['start'])
 async def welcome(message: types.Message):
@@ -58,6 +62,7 @@ async def welcome(message: types.Message):
     await message.reply("Привет! \nЯ чат-бот, который поможет в работе с Qlik Sence!\
                         \nЧем я могу помочь?")
 
+
 @dispatcher.message_handler(commands=['clear'])
 async def clear(message: types.Message):
     """
@@ -65,6 +70,7 @@ async def clear(message: types.Message):
     """
     clear_past()
     await message.reply("Я очистил прошлый разговор и контекст.")
+
 
 @dispatcher.message_handler(commands=['help'])
 async def helper(message: types.Message):
@@ -79,6 +85,7 @@ async def helper(message: types.Message):
     """
     await message.reply(help_command)
 
+
 @dispatcher.message_handler()
 async def chatgpt(message: types.Message):
     """
@@ -88,17 +95,19 @@ async def chatgpt(message: types.Message):
 
     # ----------------MY CODE STARTS HERE----------------
     openai_ef = embedding_functions.OpenAIEmbeddingFunction(
-                api_key = openai.api_key,
-                model_name = MODEL_EMBEDDING)
+        api_key = openai.api_key,
+        model_name = MODEL_EMBEDDING
+    )
 
-    client = chromadb.PersistentClient(path = f'{repo}/chromadb_collection')
-    collection = client.get_collection('qliksence', embedding_function = openai_ef)
+    client = chromadb.PersistentClient(path=str(CHROMA_STORE_PATH))
+    collection = client.get_collection('qlicksense',
+                                       embedding_function=openai_ef)
 
     query_vector = query_embedding(message.text)
 
-    results = collection.query(query_embeddings = query_vector,
-                           n_results = 3,
-                           include = ['documents', 'metadatas', 'distances'])
+    results = collection.query(query_embeddings=query_vector,
+                               n_results=3,
+                               include=['documents', 'metadatas', 'distances'])
 
     tuple_results = tuple(zip(results['distances'][0], results['documents'][0], results['metadatas'][0]))
 
@@ -148,6 +157,7 @@ async def chatgpt(message: types.Message):
 
       print(f">» chatGPT: \n{meta}")
       await bot.send_message(chat_id=message.chat.id, text=f"{meta}")
+
 
 if __name__ == '__main__':
     print("Starting...")
