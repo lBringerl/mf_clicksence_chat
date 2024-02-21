@@ -109,10 +109,10 @@ async def chatgpt(message: types.Message):
                                n_results=3,
                                include=['documents', 'metadatas', 'distances'])
 
-    tuple_results = tuple(zip(results['distances'][0], results['documents'][0], results['metadatas'][0]))
+    # tuple_results = tuple(zip(results['distances'][0], results['documents'][0], results['metadatas'][0]))
 
-    meta = set([f'Документ "{i[2]["doc"]}", страница {i[2]["page"]}' \
-                                           for i in tuple_results if i[0] <= 0.16]) # threshold
+    # meta = set([f'Документ "{i[2]["doc"]}", страница {i[2]["page"]}' \
+    #                                        for i in tuple_results if i[0] <= 0.16]) # threshold
 
     space = '\n'.join(str(item) for item in results['documents'][0]) # all OR limited by threshold
 
@@ -152,11 +152,11 @@ async def chatgpt(message: types.Message):
     print(f">» chatGPT: \n{reference.response}")
     await bot.send_message(chat_id=message.chat.id, text=f"{reference.response}")
 
-    if len(meta) != 0:
-      meta = 'Узнать больше:\n' + '\n'.join(meta)
+    # if len(meta) != 0:
+    #   meta = 'Узнать больше:\n' + '\n'.join(meta)
 
-      print(f">» chatGPT: \n{meta}")
-      await bot.send_message(chat_id=message.chat.id, text=f"{meta}")
+    #   print(f">» chatGPT: \n{meta}")
+    #   await bot.send_message(chat_id=message.chat.id, text=f"{meta}")
 
 
 if __name__ == '__main__':
