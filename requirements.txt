@@ -4,7 +4,7 @@ typing_extensions
 typing-extensions
 google_colab_shell
 openai==0.28
-chromadb
+chromadb==0.4.3
 PyPDF2
 notebook
 ipywidgets
