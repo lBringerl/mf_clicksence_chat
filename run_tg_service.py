@@ -8,8 +8,8 @@ from chromadb.utils import embedding_functions
 from paths import CHROMA_STORE_PATH, OPENAI_TOKEN_PATH, TG_TOKEN_PATH
 
 
-OPENAI_TOKEN = OPENAI_TOKEN_PATH.read_text()
-TG_TOKEN = TG_TOKEN_PATH.read_text()
+OPENAI_TOKEN = OPENAI_TOKEN_PATH.read_text().strip()
+TG_TOKEN = TG_TOKEN_PATH.read_text().strip()
 
 openai.api_key = OPENAI_TOKEN
 os.environ['OPENAI_API_KEY'] = OPENAI_TOKEN
