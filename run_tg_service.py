@@ -59,7 +59,7 @@ async def welcome(message: types.Message):
     A handler to welcome the user and clear past conversation and context.
     """
     clear_past()
-    await message.reply("Привет! \nЯ чат-бот, который поможет в работе с Qlik Sense!\
+    await message.reply("Привет! \nЯ чат-бот, который поможет в работе с QlikSense!\
                         \nЧем я могу помочь?")
 
 
